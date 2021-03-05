@@ -10,29 +10,21 @@ import { Query } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { identity } from 'rxjs';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { TaskStatus } from './task-status.enum';
 import { Task } from './task.entity';
-//import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
-//import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
+import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
 export class TasksController {
     constructor(private tasksService: TasksService){}
 
-
-
-/* 
     @Get()
-    getTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Task[]{
-        if(Object.keys(filterDto).length){
-            return this.tasksService.getTasksWithFilters(filterDto);
-        }else{
-            return this.tasksService.getAllTasks();
-        }
-        
+    getTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Promise<Task[]>{
+        return this.tasksService.getTasks(filterDto);
     }
-*/
-    
+
     @Get('/:id')
     getTaskById(@Param('id', ParseIntPipe) id: number): Promise<Task>{
         return this.tasksService.getTaskById(id);
@@ -43,18 +35,17 @@ export class TasksController {
     createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task>{
       return this.tasksService.createTask(createTaskDto);
     }
-    
-    
-    /*@Delete('/:id')
-    deleteTask(@Param('id') id: string): void{
+      
+    @Delete('/:id')
+    deleteTask(@Param('id', ParseIntPipe) id: number): Promise<void>{
         return this.tasksService.deleteTask(id);
-    }
+    } 
 
     @Patch('/:id/status')
     updateTaskStatus(
-    @Param('id') id: string, @Body('status', new TaskStatusValidationPipe) status: TaskStatus): Task{
+    @Param('id', ParseIntPipe) id: number, @Body('status', new TaskStatusValidationPipe) status: TaskStatus): Promise<Task>{
         return this.tasksService.updateTaskStatus(id, status);          
-    } */
+    }
 
 }
 
